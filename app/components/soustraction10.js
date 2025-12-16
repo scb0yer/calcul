@@ -13,7 +13,7 @@ const Soustraction10 = ({ setOperation, setAnswer, index }) => {
       calcul = `${number1} - ${number2}`;
     }
     setOperation(calcul);
-    const answer = number1 - 2;
+    const answer = number1 - number2;
     setAnswer(answer);
   }, [index]);
 };
