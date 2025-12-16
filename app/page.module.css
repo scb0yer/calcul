@@ -97,6 +97,7 @@
   font-size: 20px;
   font-family: "Crafty Girls", cursive;
   cursor: pointer;
+  padding: 5px;
 }
 .dot {
   width: 30px;

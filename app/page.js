@@ -6,6 +6,8 @@ import Addition10 from "./components/addition10";
 import Doubles10 from "./components/doubles10";
 import DoublesD50 from "./components/doublesD50";
 import Complements10 from "./components/complements10";
+import Soustraction2 from "./components/soustraction2";
+import Soustraction10 from "./components/soustraction10";
 
 export default function Home() {
   const [index, setIndex] = useState();
@@ -123,6 +125,8 @@ export default function Home() {
     "Doubles < 10",
     "Doubles Dizaines < 60",
     "Compléments à 10",
+    "Soustraction par 2",
+    "Soustraction de nombres < 10",
   ];
 
   return (
@@ -396,6 +400,20 @@ export default function Home() {
         )}
         {strategies[index] === "Compléments à 10" && (
           <Complements10
+            setOperation={setOperation}
+            setAnswer={setAnswer}
+            index={index}
+          />
+        )}
+        {strategies[index] === "Soustraction par 2" && (
+          <Soustraction2
+            setOperation={setOperation}
+            setAnswer={setAnswer}
+            index={index}
+          />
+        )}
+        {strategies[index] === "Soustraction de nombres < 10" && (
+          <Soustraction10
             setOperation={setOperation}
             setAnswer={setAnswer}
             index={index}
