@@ -9,7 +9,7 @@
   background-position: center;
   background-repeat: no-repeat;
   position: absolute;
-  top: -20px;
+  top: -50px;
   left: calc((100vw - 360px) / 2);
   z-index: 1;
 }
@@ -45,7 +45,7 @@
   position: absolute;
   width: 200px;
   height: 40px;
-  top: 650px;
+  bottom: 20px;
   left: calc((100vw - 200px) / 2);
   background-color: #fff3e2;
   border: #000 2px solid;
@@ -59,18 +59,22 @@
   position: absolute;
   width: 350px;
   height: 40px;
-  top: 670px;
+  bottom: 60px;
   left: calc((100vw - 350px) / 2);
   display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+  gap: 5px;
+  z-index: 100;
 }
 .key {
   position: relative;
-  width: 35px;
-  height: 35px;
+  width: 60px;
+  height: 45px;
   background-color: #fff3e2;
   border: rgb(0, 0, 0) 2px solid;
   border-radius: 5px;
-  padding: 2px;
+  padding: 7px;
   text-align: center;
   font-size: 20px;
   font-family: "Crafty Girls", cursive;
@@ -80,8 +84,9 @@
   display: flex;
   position: absolute;
   width: 200px;
-  top: 630px;
+  bottom: 110px;
   left: calc((100vw - 200px) / 2);
+  z-index: 100;
 }
 .result {
   position: relative;

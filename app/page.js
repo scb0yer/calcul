@@ -3,6 +3,9 @@ import Image from "next/image";
 import styles from "./page.module.css";
 import { useEffect, useState } from "react";
 import Addition10 from "./components/addition10";
+import Doubles10 from "./components/doubles10";
+import DoublesD50 from "./components/doublesD50";
+import Complements10 from "./components/complements10";
 
 export default function Home() {
   const [index, setIndex] = useState();
@@ -14,8 +17,9 @@ export default function Home() {
   const [operation, setOperation] = useState(null);
   const [answer, setAnswer] = useState(null);
   const [start, setStart] = useState(false);
+  const [gameOver, setGameOver] = useState(false);
 
-  const time = 5;
+  const time = 17;
 
   useEffect(() => {
     if (response) {
@@ -50,12 +54,21 @@ export default function Home() {
             RETENTE TA CHANCE ! 💪
           </>
         );
-        setOperation(null);
+        setGameOver(true);
         setStart(false);
       }, time * 12000);
       return () => clearInterval(interval);
     }
   }, [start]);
+
+  useEffect(() => {
+    if (gameOver) {
+      const interval = setInterval(() => {
+        window.location.reload();
+      }, 2000);
+      return () => clearInterval(interval);
+    }
+  }, [gameOver]);
 
   const newCalcul = () => {
     setAnswer(null);
@@ -73,8 +86,15 @@ export default function Home() {
         y: prev.y - 42,
       }));
       if (score === 11) {
-        setResponse("BRAVO ! 🏆");
+        setResponse(
+          <>
+            "BRAVO ! 🏆
+            <br />
+            TU AS GAGNÉ !
+          </>
+        );
         setStart(false);
+        setGameOver(true);
         return;
       } else {
         setResponse("CONTINUE ! 🚀");
@@ -100,9 +120,9 @@ export default function Home() {
 
   const strategies = [
     "Addition < 10",
-    // "Doubles < 10",
-    // "Doubles Dizaines < 60",
-    // "Compléments à 10",
+    "Doubles < 10",
+    "Doubles Dizaines < 60",
+    "Compléments à 10",
   ];
 
   return (
@@ -292,12 +312,6 @@ export default function Home() {
             <div className={styles.keyboard}>
               <div
                 className={styles.key}
-                onClick={() => setResult((prev) => prev + "0")}
-              >
-                0
-              </div>
-              <div
-                className={styles.key}
                 onClick={() => setResult((prev) => prev + "1")}
               >
                 1
@@ -350,11 +364,38 @@ export default function Home() {
               >
                 9
               </div>
+              <div
+                className={styles.key}
+                onClick={() => setResult((prev) => prev + "0")}
+              >
+                0
+              </div>
             </div>
           </div>
         )}
         {strategies[index] === "Addition < 10" && (
           <Addition10
+            setOperation={setOperation}
+            setAnswer={setAnswer}
+            index={index}
+          />
+        )}
+        {strategies[index] === "Doubles < 10" && (
+          <Doubles10
+            setOperation={setOperation}
+            setAnswer={setAnswer}
+            index={index}
+          />
+        )}
+        {strategies[index] === "Doubles Dizaines < 60" && (
+          <DoublesD50
+            setOperation={setOperation}
+            setAnswer={setAnswer}
+            index={index}
+          />
+        )}
+        {strategies[index] === "Compléments à 10" && (
+          <Complements10
             setOperation={setOperation}
             setAnswer={setAnswer}
             index={index}
