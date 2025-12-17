@@ -20,12 +20,12 @@ export default function Home() {
   const [answer, setAnswer] = useState(null);
   const [start, setStart] = useState(false);
   const [gameOver, setGameOver] = useState(false);
-
-  const time = 17;
+  const [time, setTime] = useState(22);
 
   useEffect(() => {
     if (response) {
       const timer = setTimeout(() => {
+        if (gameOver) return;
         setResponse(null);
         newCalcul();
       }, 2000); // 5000ms = 5 secondes
@@ -39,7 +39,7 @@ export default function Home() {
       const interval = setInterval(() => {
         setKnucklesPosition((prev) => ({
           ...prev,
-          y: prev.y - 42, // monte Sonic
+          y: prev.y - 42, // monte Knuckles
         }));
       }, time * 1000);
       return () => clearInterval(interval);
@@ -49,6 +49,7 @@ export default function Home() {
   useEffect(() => {
     if (start) {
       const interval = setInterval(() => {
+        if (gameOver) return;
         setResponse(
           <>
             KNUCKLES A GAGNÉ. 😢
@@ -63,19 +64,21 @@ export default function Home() {
     }
   }, [start]);
 
-  useEffect(() => {
-    if (gameOver) {
-      const interval = setInterval(() => {
-        window.location.reload();
-      }, 2000);
-      return () => clearInterval(interval);
-    }
-  }, [gameOver]);
+  // useEffect(() => {
+  //   if (gameOver) {
+  //     const interval = setInterval(() => {
+  //       window.location.reload();
+  //     }, 5000);
+  //     return () => clearInterval(interval);
+  //   }
+  // }, [gameOver]);
 
   const newCalcul = () => {
-    setAnswer(null);
-    let alea = Math.floor(Math.random() * strategies.length);
-    setIndex(alea);
+    if (!gameOver) {
+      setAnswer(null);
+      let alea = Math.floor(Math.random() * strategies.length);
+      setIndex(alea);
+    }
   };
 
   const checkResult = () => {
@@ -134,6 +137,47 @@ export default function Home() {
       <main className={styles.main}>
         <div className={styles.game}>
           <div className={styles.layer}>
+            <div className={styles.options}>
+              <div
+                className={styles.option}
+                style={{
+                  backgroundColor: time === 22 ? "yellow" : "#fff3e2",
+                }}
+                onClick={() => {
+                  if (!start) {
+                    setTime(22);
+                  }
+                }}
+              >
+                🐢
+              </div>
+              <div
+                className={styles.option}
+                style={{
+                  backgroundColor: time === 17 ? "yellow" : "#fff3e2",
+                }}
+                onClick={() => {
+                  if (!start) {
+                    setTime(17);
+                  }
+                }}
+              >
+                🐀
+              </div>
+              <div
+                className={styles.option}
+                style={{
+                  backgroundColor: time === 12 ? "yellow" : "#fff3e2",
+                }}
+                onClick={() => {
+                  if (!start) {
+                    setTime(12);
+                  }
+                }}
+              >
+                🐅
+              </div>
+            </div>
             <div className={styles.box}>
               {operation && !response && (
                 <div className={styles.operation}>{operation}</div>
@@ -296,123 +340,141 @@ export default function Home() {
             COMMENCER
           </button>
         )}
+        {gameOver && (
+          <button
+            className={styles.btn}
+            onClick={() => {
+              window.location.reload();
+            }}
+          >
+            REJOUER
+          </button>
+        )}
         {operation && (
           <div>
-            <div className={styles.actionboard}>
-              <div className={styles.result}>{result}</div>
-              {result && (
+            {!gameOver && (
+              <div className={styles.actionboard}>
+                <div className={styles.result}>{result}</div>
+
                 <div
                   className={styles.key}
-                  onClick={() => setResult((prev) => prev.slice(0, -1))}
+                  onClick={() => {
+                    if (result) {
+                      setResult((prev) => prev.slice(0, -1));
+                    }
+                  }}
                 >
                   ⌫
                 </div>
-              )}
-              <div className={styles.key} onClick={() => checkResult()}>
-                ✅
-              </div>
-            </div>
 
-            <div className={styles.keyboard}>
-              <div
-                className={styles.key}
-                onClick={() => setResult((prev) => prev + "1")}
-              >
-                1
+                <div className={styles.validate} onClick={() => checkResult()}>
+                  ✅
+                </div>
               </div>
-              <div
-                className={styles.key}
-                onClick={() => setResult((prev) => prev + "2")}
-              >
-                2
+            )}
+
+            {!gameOver && (
+              <div className={styles.keyboard}>
+                <div
+                  className={styles.key}
+                  onClick={() => setResult((prev) => prev + "1")}
+                >
+                  1
+                </div>
+                <div
+                  className={styles.key}
+                  onClick={() => setResult((prev) => prev + "2")}
+                >
+                  2
+                </div>
+                <div
+                  className={styles.key}
+                  onClick={() => setResult((prev) => prev + "3")}
+                >
+                  3
+                </div>
+                <div
+                  className={styles.key}
+                  onClick={() => setResult((prev) => prev + "4")}
+                >
+                  4
+                </div>
+                <div
+                  className={styles.key}
+                  onClick={() => setResult((prev) => prev + "5")}
+                >
+                  5
+                </div>
+                <div
+                  className={styles.key}
+                  onClick={() => setResult((prev) => prev + "6")}
+                >
+                  6
+                </div>
+                <div
+                  className={styles.key}
+                  onClick={() => setResult((prev) => prev + "7")}
+                >
+                  7
+                </div>
+                <div
+                  className={styles.key}
+                  onClick={() => setResult((prev) => prev + "8")}
+                >
+                  8
+                </div>
+                <div
+                  className={styles.key}
+                  onClick={() => setResult((prev) => prev + "9")}
+                >
+                  9
+                </div>
+                <div
+                  className={styles.key}
+                  onClick={() => setResult((prev) => prev + "0")}
+                >
+                  0
+                </div>
               </div>
-              <div
-                className={styles.key}
-                onClick={() => setResult((prev) => prev + "3")}
-              >
-                3
-              </div>
-              <div
-                className={styles.key}
-                onClick={() => setResult((prev) => prev + "4")}
-              >
-                4
-              </div>
-              <div
-                className={styles.key}
-                onClick={() => setResult((prev) => prev + "5")}
-              >
-                5
-              </div>
-              <div
-                className={styles.key}
-                onClick={() => setResult((prev) => prev + "6")}
-              >
-                6
-              </div>
-              <div
-                className={styles.key}
-                onClick={() => setResult((prev) => prev + "7")}
-              >
-                7
-              </div>
-              <div
-                className={styles.key}
-                onClick={() => setResult((prev) => prev + "8")}
-              >
-                8
-              </div>
-              <div
-                className={styles.key}
-                onClick={() => setResult((prev) => prev + "9")}
-              >
-                9
-              </div>
-              <div
-                className={styles.key}
-                onClick={() => setResult((prev) => prev + "0")}
-              >
-                0
-              </div>
-            </div>
+            )}
           </div>
         )}
-        {strategies[index] === "Addition < 10" && (
+        {!gameOver && strategies[index] === "Addition < 10" && (
           <Addition10
             setOperation={setOperation}
             setAnswer={setAnswer}
             index={index}
           />
         )}
-        {strategies[index] === "Doubles < 10" && (
+        {!gameOver && strategies[index] === "Doubles < 10" && (
           <Doubles10
             setOperation={setOperation}
             setAnswer={setAnswer}
             index={index}
           />
         )}
-        {strategies[index] === "Doubles Dizaines < 60" && (
+        {!gameOver && strategies[index] === "Doubles Dizaines < 60" && (
           <DoublesD50
             setOperation={setOperation}
             setAnswer={setAnswer}
             index={index}
           />
         )}
-        {strategies[index] === "Compléments à 10" && (
+        {!gameOver && strategies[index] === "Compléments à 10" && (
           <Complements10
             setOperation={setOperation}
             setAnswer={setAnswer}
             index={index}
           />
         )}
-        {strategies[index] === "Soustraction par 2" && (
+        {!gameOver && strategies[index] === "Soustraction par 2" && (
           <Soustraction2
             setOperation={setOperation}
             setAnswer={setAnswer}
             index={index}
           />
         )}
-        {strategies[index] === "Soustraction de nombres < 10" && (
+        {!gameOver && strategies[index] === "Soustraction de nombres < 10" && (
           <Soustraction10
             setOperation={setOperation}
             setAnswer={setAnswer}
