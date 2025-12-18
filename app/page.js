@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import styles from "./page.module.css";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Addition10 from "./components/addition10";
 import Doubles10 from "./components/doubles10";
 import DoublesD50 from "./components/doublesD50";
@@ -21,6 +21,13 @@ export default function Home() {
   const [start, setStart] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [time, setTime] = useState(22);
+  const startTimeRef = useRef(null);
+  const [points, setPoints] = useState({
+    right: 0,
+    wrong: 0,
+    time: 0,
+    total: 0,
+  });
 
   useEffect(() => {
     if (response) {
@@ -35,7 +42,48 @@ export default function Home() {
   }, [response]);
 
   useEffect(() => {
+    console.log("1", points);
+    if (gameOver && points.time >= 0) {
+      console.log("2", points);
+      const timePerCalcul = points.time / points.right;
+      let totalPoints = points.right * 2 - points.wrong;
+      for (let s = 6; s < 22; s++) {
+        if (timePerCalcul < s) {
+          totalPoints += 22 - s;
+          setPoints((prev) => ({
+            ...prev,
+            total: totalPoints,
+          }));
+
+          break;
+        }
+      }
+      if (score === 12) {
+        setResponse(
+          <>
+            BRAVO ! 🏆
+            <br />
+            TU AS GAGNÉ !
+            <br />
+            SCORE : {totalPoints} ⭐️
+          </>
+        );
+      } else {
+        setResponse(
+          <>
+            KNUCKLES A GAGNÉ. 😢
+            <br />
+            SCORE : {totalPoints} ⭐️
+          </>
+        );
+        console.log(points);
+      }
+    }
+  }, [points.time]);
+
+  useEffect(() => {
     if (start) {
+      startTimeRef.current = Date.now();
       const interval = setInterval(() => {
         setKnucklesPosition((prev) => ({
           ...prev,
@@ -50,28 +98,16 @@ export default function Home() {
     if (start) {
       const interval = setInterval(() => {
         if (gameOver) return;
-        setResponse(
-          <>
-            KNUCKLES A GAGNÉ. 😢
-            <br />
-            RETENTE TA CHANCE ! 💪
-          </>
-        );
         setGameOver(true);
         setStart(false);
+        setPoints((prev) => ({
+          ...prev,
+          time: time * 12,
+        }));
       }, time * 12000);
       return () => clearInterval(interval);
     }
   }, [start]);
-
-  // useEffect(() => {
-  //   if (gameOver) {
-  //     const interval = setInterval(() => {
-  //       window.location.reload();
-  //     }, 5000);
-  //     return () => clearInterval(interval);
-  //   }
-  // }, [gameOver]);
 
   const newCalcul = () => {
     if (!gameOver) {
@@ -85,26 +121,35 @@ export default function Home() {
     console.log("answer", answer);
     console.log("result", result);
     if (result.toString() === answer.toString()) {
-      setScore((prev) => prev + 1);
-      setSonicPosition((prev) => ({
-        ...prev,
-        y: prev.y - 42,
-      }));
       if (score === 11) {
-        setResponse(
-          <>
-            "BRAVO ! 🏆
-            <br />
-            TU AS GAGNÉ !
-          </>
-        );
         setStart(false);
+        setScore((prev) => prev + 1);
+        const elapsedMs = Date.now() - startTimeRef.current;
+        const elapsedSeconds = Math.floor(elapsedMs / 1000);
         setGameOver(true);
+        setPoints((prev) => ({
+          ...prev,
+          time: elapsedSeconds,
+          right: prev.right + 1,
+        }));
         return;
       } else {
+        setScore((prev) => prev + 1);
+        setSonicPosition((prev) => ({
+          ...prev,
+          y: prev.y - 42,
+        }));
+        setPoints((prev) => ({
+          ...prev,
+          right: prev.right + 1,
+        }));
         setResponse("CONTINUE ! 🚀");
       }
     } else {
+      setPoints((prev) => ({
+        ...prev,
+        wrong: prev.wrong + 1,
+      }));
       setResponse(
         <>
           {operation} = {answer}.<br />
@@ -162,7 +207,7 @@ export default function Home() {
                   }
                 }}
               >
-                🐀
+                🫏
               </div>
               <div
                 className={styles.option}
@@ -178,24 +223,88 @@ export default function Home() {
                 🐅
               </div>
             </div>
+            {gameOver && score === 12 && (
+              <Image
+                src="/fire.gif"
+                alt="Gagné"
+                width={350}
+                height={350}
+                style={{
+                  position: "absolute",
+                  top: 120,
+                  left: 10,
+                }}
+              />
+            )}
             <div className={styles.box}>
               {operation && !response && (
                 <div className={styles.operation}>{operation}</div>
               )}
               {response && <div className={styles.response}>{response}</div>}
+              {!gameOver && !start && (
+                <div className={styles.consigne}>
+                  AVANT DE COMMENCER,
+                  <br />
+                  CHOISIS TA VITESSE :<br /> 🐢 🫏 🐅
+                </div>
+              )}
             </div>
-            <Image
-              src="/sonic.png"
-              alt="Sonic"
-              width={100}
-              height={100}
-              style={{
-                position: "absolute",
-                top: 560,
-                left: 100,
-                transform: `translate(${sonicPosition.x}px, ${sonicPosition.y}px)`,
-              }}
-            />
+            {start && !gameOver && (
+              <Image
+                src="/sonic.png"
+                alt="Sonic"
+                width={100}
+                height={100}
+                style={{
+                  position: "absolute",
+                  top: 560,
+                  left: 100,
+                  transform: `translate(${sonicPosition.x}px, ${sonicPosition.y}px)`,
+                }}
+              />
+            )}
+            {!start && !gameOver && (
+              <Image
+                src="/start.gif"
+                alt="Sonic"
+                width={100}
+                height={100}
+                style={{
+                  position: "absolute",
+                  top: 560,
+                  left: 100,
+                  transform: `translate(${sonicPosition.x}px, ${sonicPosition.y}px)`,
+                }}
+              />
+            )}
+            {gameOver && score === 12 && (
+              <Image
+                src="/win.gif"
+                alt="Sonic"
+                width={100}
+                height={100}
+                style={{
+                  position: "absolute",
+                  top: 560,
+                  left: 100,
+                  transform: `translate(${sonicPosition.x}px, ${sonicPosition.y}px)`,
+                }}
+              />
+            )}
+            {gameOver && score < 12 && (
+              <Image
+                src="/gameover.gif"
+                alt="Sonic"
+                width={100}
+                height={100}
+                style={{
+                  position: "absolute",
+                  top: 560,
+                  left: 100,
+                  transform: `translate(${sonicPosition.x}px, ${sonicPosition.y}px)`,
+                }}
+              />
+            )}
             <Image
               src="/knuckles.png"
               alt="Knuckles"
@@ -208,17 +317,19 @@ export default function Home() {
                 transform: `translate(${knucklesPosition.x}px, ${knucklesPosition.y}px)`,
               }}
             />
-            <Image
-              src="/ring.png"
-              alt="Anneau"
-              width={70}
-              height={70}
-              style={{
-                position: "absolute",
-                top: 70,
-                left: 165,
-              }}
-            />
+            {!gameOver && (
+              <Image
+                src="/ring.png"
+                alt="Anneau"
+                width={70}
+                height={70}
+                style={{
+                  position: "absolute",
+                  top: 70,
+                  left: 165,
+                }}
+              />
+            )}
             <div
               className={styles.dot}
               style={{
